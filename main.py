@@ -37,6 +37,8 @@ def add_task():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    username = request.args.get("username", "")  # Lấy username từ URL nếu có
+
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -46,28 +48,30 @@ def login():
             login_user(user)
 
             # Redirect đến trang được lưu trong 'next' hoặc '/' nếu không có 'next'
-            next_page = request.args.get("next")
+            next_page = request.args.get("/")
             return redirect(next_page or url_for("index"))
 
         flash("Invalid username or password", "danger")
-    return render_template("login.html")
+    return render_template("login.html", username=username)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
+    error_message = None
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
         # Kiểm tra xem username đã tồn tại hay chưa
         if User.query.filter_by(username=username).first():
-            flash("Username already exists!", "danger")
-            return redirect(url_for("register"))
-        # Tạo user mới
-        new_user = User(username=username, password=password)
-        db.session.add(new_user)
-        db.session.commit()
-        flash("Account created successfully! Please log in.", "success")
-        return redirect(url_for("login"))
-    return render_template("register.html")
+            error_message = "Username already exists!"
+        else:
+            # Tạo user mới nếu hợp lệ
+            new_user = User(username=username, password=password)
+            db.session.add(new_user)
+            db.session.commit()
+            flash("Account created successfully! Please log in.", "success")
+            return redirect(url_for("login", username=username))
+
+    return render_template("register.html", error_message=error_message)
 
 @app.route("/logout")
 @login_required
@@ -79,4 +83,4 @@ def logout():
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
