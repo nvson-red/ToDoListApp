@@ -2,7 +2,23 @@
 <html lang="en">
 <head>
     <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script>
+       // Hàm kiểm tra và enable/disable nút Register
+        function validateForm() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+            const loginButton = document.getElementById("loginButton");
+            loginButton.disabled = !(username && password);
+        }
+
+        // Gọi validateForm khi có sự kiện input
+        document.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("username").addEventListener("input", validateForm);
+            document.getElementById("password").addEventListener("input", validateForm);
+        });
+    </script>
 </head>
 <body class="bg-light">
     <div class="container mt-5">
@@ -16,12 +32,12 @@
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" id="password" name="password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="submit" class="btn btn-primary w-100" id="loginButton" disabled>Login</button>
         </form>
 
         <!-- Thêm đường dẫn đến trang Register -->
         <div class="text-center mt-3">
-            <p>Don't have an account? <a href="/register" class="btn btn-link">Register here</a></p>
+            <p>Don't have an account? <a href="/register">Register here</a></p>
         </div>
     </div>
 </body>
